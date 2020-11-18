@@ -23,11 +23,28 @@
 */
 #include "PWMSpindle.h"
 
+#ifndef LASER_OUTPUT_PIN 
+#ifdef SPINDLE_OUTPUT_PIN
+#define LASER_OUTPUT_PIN SPINDLE_OUTPUT_PIN
+#else
+#define LASER_OUTPUT_PIN UNDEFINED_PIN
+#endif
+#endif
+
+#ifndef LASER_ENABLE_PIN 
+#ifdef SPINDLE_ENABLE_PIN
+#define LASER_ENABLE_PIN SPINDLE_ENABLE_PIN
+#else
+#define LASER_ENABLE_PIN UNDEFINED_PIN
+#endif
+#endif
+
+
 namespace Spindles {
     // this is the same as a PWM spindle but the M4 compensation is supported.
     class Laser : public PWM {
     public:
-        Laser() = default;
+        Laser() : PWM( LASER_OUTPUT_PIN, LASER_ENABLE_PIN ) { }
 
         Laser(const Laser&) = delete;
         Laser(Laser&&)      = delete;

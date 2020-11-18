@@ -66,6 +66,10 @@ namespace Spindles {
     }
 
     void Relay::set_output(uint32_t duty) {
+        //    grbl_msg_sendf(CLIENT_SERIAL,
+        //                MsgLevel::Info,
+        //                "Relay::set_output(%d)\n", duty );
+     
 #ifdef INVERT_SPINDLE_PWM
         duty = (duty == 0);  // flip duty
 #endif

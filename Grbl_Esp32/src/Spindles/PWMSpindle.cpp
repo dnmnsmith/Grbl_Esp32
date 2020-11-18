@@ -30,6 +30,13 @@
 //#include "grbl.h"
 
 namespace Spindles {
+    PWM::PWM(uint8_t  output_pin, uint8_t  enable_pin)
+    {
+        _output_pin = output_pin;
+        _enable_pin = enable_pin;
+        _enabled = false;
+    }
+
     void PWM::init() {
         get_pins_and_settings();
 
@@ -44,6 +51,11 @@ namespace Spindles {
         }
 
         ledcSetup(_pwm_chan_num, (double)_pwm_freq, _pwm_precision);  // setup the channel
+
+                grbl_msg_sendf(CLIENT_SERIAL,
+                       MsgLevel::Info,
+                       "PWM::init attaching pwm channel %d to pin %d", _pwm_chan_num, _output_pin );
+
         ledcAttachPin(_output_pin, _pwm_chan_num);                    // attach the PWM to the pin
 
         pinMode(_enable_pin, OUTPUT);
@@ -58,20 +70,24 @@ namespace Spindles {
     void PWM::get_pins_and_settings() {
         // setup all the pins
 
+        if (_output_pin == UNDEFINED_PIN)
+        {            
 #ifdef SPINDLE_OUTPUT_PIN
-        _output_pin = SPINDLE_OUTPUT_PIN;
-#else
-        _output_pin       = UNDEFINED_PIN;
+            _output_pin = SPINDLE_OUTPUT_PIN;
 #endif
+        grbl_msg_sendf(CLIENT_SERIAL,
+                       MsgLevel::Warning,
+                       "PWM::get_pins_and_settings applying ouput pin = %d", _output_pin );
+        }
 
         _invert_pwm = spindle_output_invert->get();
 
+        if (_enable_pin == UNDEFINED_PIN)
+        {
 #ifdef SPINDLE_ENABLE_PIN
-        _enable_pin = SPINDLE_ENABLE_PIN;
-#else
-        _enable_pin       = UNDEFINED_PIN;
+            _enable_pin = SPINDLE_ENABLE_PIN;
 #endif
-
+        }
         _off_with_zero_speed = spindle_enbl_off_with_zero_speed->get();
 
 #ifdef SPINDLE_DIR_PIN
@@ -214,6 +230,10 @@ namespace Spindles {
             return;
         }
 
+       if (_invert_pwm) {
+            duty = (1 << _pwm_precision) - duty;
+        }
+
         // to prevent excessive calls to ledcWrite, make sure duty hass changed
         if (duty == _current_pwm_duty) {
             return;
@@ -221,11 +241,12 @@ namespace Spindles {
 
         _current_pwm_duty = duty;
 
-        if (_invert_pwm) {
-            duty = (1 << _pwm_precision) - duty;
-        }
+ 
+        grbl_msg_sendf(CLIENT_SERIAL, MsgLevel::Info, "set_output(%d)", duty);
 
-        //grbl_msg_sendf(CLIENT_SERIAL, MsgLevel::Info, "set_output(%d)", duty);
+        // grbl_msg_sendf(CLIENT_SERIAL,
+        //                MsgLevel::Info,
+        //                "PWM::set_output applying duty %d", duty );
 
         ledcWrite(_pwm_chan_num, duty);
     }
@@ -243,7 +264,15 @@ namespace Spindles {
             enable = !enable;
         }
 
+        if (_enabled != enable)
+        {
+            // grbl_msg_sendf(CLIENT_SERIAL,
+            //            MsgLevel::Info,
+            //            "PWM::set_enable_pin applying %d to pin %d", enable ? 1: 0, _enable_pin );
+            _enabled = enable;
+        }
         digitalWrite(_enable_pin, enable);
+        
     }
 
     void PWM::set_dir_pin(bool Clockwise) { digitalWrite(_direction_pin, Clockwise); }

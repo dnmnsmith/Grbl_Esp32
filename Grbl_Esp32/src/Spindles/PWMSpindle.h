@@ -27,7 +27,7 @@ namespace Spindles {
     // This adds support for PWM
     class PWM : public Spindle {
     public:
-        PWM() = default;
+        PWM(uint8_t output_pin = UNDEFINED_PIN, uint8_t enable_pin = UNDEFINED_PIN);
 
         PWM(const PWM&) = delete;
         PWM(PWM&&)      = delete;
@@ -60,6 +60,8 @@ namespace Spindles {
         bool     _piecewide_linear;
         bool     _off_with_zero_speed;
         bool     _invert_pwm;
+
+        bool     _enabled;
         //uint32_t _pwm_gradient; // Precalulated value to speed up rpm to PWM conversions.
 
         virtual void set_dir_pin(bool Clockwise);

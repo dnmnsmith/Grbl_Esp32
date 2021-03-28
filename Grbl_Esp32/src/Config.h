@@ -96,7 +96,7 @@ const int MAX_N_AXIS = 6;
 //#define CONNECT_TO_SSID  "your SSID"
 //#define SSID_PASSWORD  "your SSID password"
 //CONFIGURE_EYECATCH_BEGIN (DO NOT MODIFY THIS LINE)
-// #define ENABLE_BLUETOOTH  // enable bluetooth
+#define ENABLE_BLUETOOTH  // enable bluetooth
 
 // #define ENABLE_SD_CARD  // enable use of SD Card to run jobs
 
@@ -128,7 +128,7 @@ const int MAX_N_AXIS = 6;
 // "in the clear" over unsecured channels.  It should be treated as a
 // "friendly suggestion" to prevent unwitting dangerous actions, rather than
 // as effective security against malice.
-//#define ENABLE_AUTHENTICATION
+#define ENABLE_AUTHENTICATION
 //CONFIGURE_EYECATCH_END (DO NOT MODIFY THIS LINE)
 
 #ifdef ENABLE_AUTHENTICATION

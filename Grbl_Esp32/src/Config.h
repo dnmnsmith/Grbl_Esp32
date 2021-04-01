@@ -102,9 +102,9 @@ const int MAX_N_AXIS = 6;
 
 // #define ENABLE_WIFI  //enable wifi
 
-// #if defined(ENABLE_WIFI) || defined(ENABLE_BLUETOOTH)
-// #    define WIFI_OR_BLUETOOTH
-// #endif
+#if defined(ENABLE_WIFI) || defined(ENABLE_BLUETOOTH)
+#    define WIFI_OR_BLUETOOTH
+#endif
 
 // #define ENABLE_HTTP                //enable HTTP and all related services
 // #define ENABLE_OTA                 //enable OTA
